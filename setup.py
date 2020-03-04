@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pravah",
-    version="0.0.1",
+    version="0.1.1",
     author="Abhishek Upperwal",
     author_email="mesh@soket.in",
     description="Data access layer",
@@ -19,8 +19,8 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires = [
-        'mesh_rpc',
+        'mesh_rpc>=0.1.1',
         'pravah_protocols',
-        'dlake'
+        'dlake>=0.1.2'
     ]
 )

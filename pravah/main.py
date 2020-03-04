@@ -11,8 +11,8 @@ feed_message_string = 'FeedMessage'
 
 
 class Pravah(MeshRPC):
-    def __init__(self, channel, endpoint='127.0.0.1:5555'):
-        super().__init__(endpoint)
+    def __init__(self, channel, auth_token, endpoint='127.0.0.1:5555'):
+        super().__init__(endpoint, auth_token)
 
         self.channel = channel
 
@@ -23,7 +23,7 @@ class Pravah(MeshRPC):
         self.parent_module = importlib.import_module(parent_module)
         self.FeedMessage = getattr(self.proto_module, feed_message_string)
 
-        self.datalake = Datalake(os.getenv('PRAVAH_DB_USERNAME'), os.getenv('PRAVAH_DB_PASSWORD'), channel)
+        self.datalake = Datalake(channel, auth_token)
 
     def subscribe(self, geospace):
         s = super().subscribe(self.channel, geospace)

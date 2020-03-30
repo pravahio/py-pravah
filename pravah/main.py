@@ -11,7 +11,7 @@ feed_message_string = 'FeedMessage'
 
 
 class Pravah(MeshRPC):
-    def __init__(self, channel, auth_token, endpoint='127.0.0.1:5555'):
+    def __init__(self, channel, auth_token, endpoint='rpc.pravah.io:6666'):
         super().__init__(endpoint, auth_token)
 
         self.channel = channel

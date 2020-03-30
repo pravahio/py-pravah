@@ -51,9 +51,15 @@ class Pravah(MeshRPC):
     def publish(self, geospace, d):
         d['header']['version'] = self.parent_module.pravah_protocol_version.get(self.channel, "0.0.1")
         
-        feed = self.FeedMessage()
-        ParseDict(d, feed, True)
-        raw = feed.SerializeToString()
+        feed = ''
+        try:
+            feed = self.FeedMessage()
+
+            # TODO: ParseDict does not raise exception if parsing fails
+            ParseDict(d, feed, True)
+            raw = feed.SerializeToString()
+        except:
+            raise
 
         try:
             res = super().publish(self.channel, geospace, raw)
@@ -68,6 +74,9 @@ class Pravah(MeshRPC):
     
     def get_historical_data(self, query={}, **kwargs):
         return self.datalake.get(query, **kwargs)
+    
+    def latest(self):
+        return self.datalake.latest()
 
     def get_static_data(self):
         pass

@@ -11,8 +11,8 @@ feed_message_string = 'FeedMessage'
 
 
 class Pravah(MeshRPC):
-    def __init__(self, channel, endpoint='127.0.0.1:5555'):
-        super().__init__(endpoint)
+    def __init__(self, channel, auth_token, endpoint='rpc.pravah.io:6666'):
+        super().__init__(endpoint, auth_token)
 
         self.channel = channel
 
@@ -23,7 +23,7 @@ class Pravah(MeshRPC):
         self.parent_module = importlib.import_module(parent_module)
         self.FeedMessage = getattr(self.proto_module, feed_message_string)
 
-        self.datalake = Datalake(os.getenv('PRAVAH_DB_USERNAME'), os.getenv('PRAVAH_DB_PASSWORD'), channel)
+        self.datalake = Datalake(channel, auth_token)
 
     def subscribe(self, geospace):
         s = super().subscribe(self.channel, geospace)
@@ -49,12 +49,24 @@ class Pravah(MeshRPC):
             raise 
 
     def publish(self, geospace, d):
+        if not isinstance(d, dict):
+            return self.rawPublish(geospace, d)
+
         d['header']['version'] = self.parent_module.pravah_protocol_version.get(self.channel, "0.0.1")
         
-        feed = self.FeedMessage()
-        ParseDict(d, feed, True)
-        raw = feed.SerializeToString()
+        feed = ''
+        try:
+            feed = self.FeedMessage()
 
+            # TODO: ParseDict does not raise exception if parsing fails
+            ParseDict(d, feed, True)
+            raw = feed.SerializeToString()
+        except:
+            raise
+
+        self.rawPublish(geospace, raw)
+    
+    def rawPublish(self, geospace, raw):
         try:
             res = super().publish(self.channel, geospace, raw)
         except MeshRPCException as e:
@@ -68,6 +80,9 @@ class Pravah(MeshRPC):
     
     def get_historical_data(self, query={}, **kwargs):
         return self.datalake.get(query, **kwargs)
+    
+    def latest(self):
+        return self.datalake.latest()
 
     def get_static_data(self):
         pass

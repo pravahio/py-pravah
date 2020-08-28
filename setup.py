@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pravah",
-    version="0.1.5",
+    version="0.1.6",
     author="Abhishek Upperwal",
     author_email="mesh@soket.in",
     description="Data access layer",

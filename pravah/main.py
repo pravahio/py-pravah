@@ -49,6 +49,9 @@ class Pravah(MeshRPC):
             raise 
 
     def publish(self, geospace, d):
+        if not isinstance(d, dict):
+            return self.rawPublish(geospace, d)
+
         d['header']['version'] = self.parent_module.pravah_protocol_version.get(self.channel, "0.0.1")
         
         feed = ''
@@ -61,6 +64,9 @@ class Pravah(MeshRPC):
         except:
             raise
 
+        self.rawPublish(geospace, raw)
+    
+    def rawPublish(self, geospace, raw):
         try:
             res = super().publish(self.channel, geospace, raw)
         except MeshRPCException as e:
